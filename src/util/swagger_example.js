@@ -1,3 +1,5 @@
+import { jsonb } from 'drizzle-orm/pg-core';
+
 const getDescriptionByCode = (code) => {
 	let description = '';
 	switch (code) {
@@ -59,6 +61,10 @@ const SE = {
 	array: (items = {}) => ({
 		type: 'array',
 		items,
+	}),
+	jsonb: (example = []) => ({
+		type: 'object',
+		example,
 	}),
 
 	// * Others

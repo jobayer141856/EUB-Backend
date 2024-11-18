@@ -1,6 +1,7 @@
 import express from 'express';
 
 import { hrRouter } from '../db/hr/route.js';
+import { newsRouter } from '../db/news/route.js';
 
 const route = express.Router();
 
@@ -17,5 +18,6 @@ const route = express.Router();
 
 // hr routes
 route.use('/hr', hrRouter);
+route.use('/news', newsRouter);
 
 export default route;

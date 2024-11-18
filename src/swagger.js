@@ -4,15 +4,19 @@ import { PRODUCTION_URL, SERVER_URL } from './lib/secret.js';
 // HR
 import { defHr, tagHr } from './db/hr/swagger/def.js';
 import { pathHr } from './db/hr/swagger/route.js';
+import { defNews, tagNews } from './db/news/swagger/def.js';
+import { pathNews } from './db/news/swagger/route.js';
 
 const tags = [...tagHr];
 
 const definitions = {
 	hr: defHr,
+	news: defNews,
 };
 
 const paths = {
 	...pathHr,
+	...pathNews,
 };
 
 const swaggerSpec = swaggerJSDoc({
