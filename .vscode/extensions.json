@@ -1,0 +1,10 @@
+{
+	"recommendations": [
+		"aaron-bond.better-comments",
+		"vivaxy.vscode-conventional-commits",
+		"GitHub.vscode-pull-request-github",
+		"ms-vsliveshare.vsliveshare",
+		"esbenp.prettier-vscode",
+		"streetsidesoftware.code-spell-checker"
+	]
+}

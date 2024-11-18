@@ -1,0 +1,15 @@
+{
+	"compilerOptions": {
+		"baseUrl": ".",
+		"module": "CommonJS",
+		"target": "ES6",
+		"paths": {
+			"@/*": ["./src/*"],
+			"@/lib/*": ["./src/lib/*"],
+			"@db/*": ["./src/db/*"],
+			"@util/*": ["./src/util/*"]
+		},
+		"moduleResolution": "node"
+	},
+	"exclude": ["node_modules"]
+}

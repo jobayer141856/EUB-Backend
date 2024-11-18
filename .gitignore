@@ -1,0 +1,5 @@
+migrations
+node_modules
+.env
+combined.log
+error.log
