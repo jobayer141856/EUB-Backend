@@ -111,7 +111,7 @@ export async function selectAll(req, res, next) {
 			message: 'User access pages',
 		};
 
-		return res.status(200).json({ toast, data: data[0] });
+		return res.status(200).json({ toast, data });
 	} catch (error) {
 		await handleError({ error, res });
 	}
