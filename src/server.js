@@ -35,7 +35,7 @@ server.get(
 
 // uploadFile();
 // deleteFile('gg.txt');
-getFile({ fileKey: 'gg.txt' });
+// getFile({ fileKey: 'gg.txt' });
 
 // listen
 server.listen(SERVER_PORT, () => {
