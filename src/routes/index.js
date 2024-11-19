@@ -2,12 +2,11 @@ import express from 'express';
 
 import { hrRouter } from '../db/hr/route.js';
 import { newsRouter } from '../db/news/route.js';
+import { otherRouter } from '../db/other/route.js';
 
 const route = express.Router();
 
 // All the routes are defined here
-
-// use the /hr route and /delivery route as reference, change the routes accordingly, also in query folder, then test with postman
 
 // TODO: Add your routes here
 // FIXME: Add your routes here
@@ -16,8 +15,13 @@ const route = express.Router();
 // WARNING: Add your routes here
 // REVIEW: Add your routes here
 
-// hr routes
+// INFO: hr routes
 route.use('/hr', hrRouter);
+
+// INFO: news routes
 route.use('/news', newsRouter);
+
+// INFO: other routes
+route.use('/other', otherRouter);
 
 export default route;
