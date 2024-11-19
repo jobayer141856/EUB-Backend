@@ -1,4 +1,6 @@
 import { desc, eq } from 'drizzle-orm';
+import multer from 'multer';
+import path from 'path';
 import {
 	handleError,
 	handleResponse,
@@ -8,54 +10,81 @@ import db from '../../index.js';
 
 import { news_portal } from '../schema.js';
 
+// Configure multer for file uploads
+const storage = multer.diskStorage({
+	destination: function (req, file, cb) {
+		cb(null, 'uploads/');
+	},
+	filename: function (req, file, cb) {
+		cb(null, `${Date.now()}-${file.originalname}`);
+	},
+});
+
+const upload = multer({ storage: storage });
+
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const {
-		uuid,
-		id,
-		title,
-		sub_title,
-		date,
-		document,
-		description,
-		short_description,
-		created_by,
-		created_at,
-		updated_at,
-		remarks,
-	} = req.body;
+	upload.fields([
+		{ name: 'cover_image', maxCount: 1 },
+		{ name: 'documents', maxCount: 10 },
+	])(req, res, async function (err) {
+		if (err) {
+			return next(err);
+		}
 
-	const news_portalPromise = db
-		.insert(news_portal)
-		.values({
+		if (!(await validateRequest(req, next))) return;
+
+		const {
 			uuid,
 			id,
 			title,
 			sub_title,
 			date,
-			document,
 			description,
 			short_description,
 			created_by,
 			created_at,
 			updated_at,
 			remarks,
-		})
-		.returning({ insertedName: news_portal.title });
+		} = req.body;
 
-	try {
-		const data = await news_portalPromise;
-		const toast = {
-			status: 201,
-			type: 'insert',
-			message: `${data[0].insertedName} inserted`,
-		};
+		const cover_image = req.files['cover_image']
+			? req.files['cover_image'][0].path
+			: null;
+		const documents = req.files['documents']
+			? req.files['documents'].map((file) => file.path)
+			: [];
 
-		return await res.status(201).json({ toast, data });
-	} catch (error) {
-		await handleError({ error, res });
-	}
+		const news_portalPromise = db.insert(news_portal).values({
+			uuid,
+			id,
+			title,
+			sub_title,
+			date,
+			cover_image,
+			documents: JSON.stringify(documents),
+			description,
+			short_description,
+			created_by,
+			created_at,
+			updated_at,
+			remarks,
+		});
+
+		try {
+			const data = await news_portalPromise;
+			const toast = {
+				status: 201,
+				type: 'insert',
+				message: `${data[0].insertedName} inserted`,
+			};
+
+			return await res.status(201).json({ toast, data });
+		} catch (error) {
+			next(error);
+		}
+	});
 }
 
 export async function update(req, res, next) {
