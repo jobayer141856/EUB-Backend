@@ -14,8 +14,8 @@ const s3Client = new S3Client({
 	},
 });
 
-export const uploadFile = async (file, folder) => {
-	const key = `${folder}/${file.originalname}`;
+export const uploadFile = async ({ file, folder = '' }) => {
+	const key = `${folder}${file.originalname}`;
 	const params = {
 		Bucket: process.env.AWS_BUCKET_NAME,
 		Key: key,
@@ -31,8 +31,8 @@ export const uploadFile = async (file, folder) => {
 	}
 };
 
-export const deleteFile = async (file, folder) => {
-	const key = `${folder}/${file.originalname}`;
+export const deleteFile = async ({ filename, folder = '' }) => {
+	const key = `${folder}${filename}`;
 	const params = {
 		Bucket: process.env.AWS_BUCKET_NAME,
 		Key: key,
@@ -40,17 +40,17 @@ export const deleteFile = async (file, folder) => {
 
 	try {
 		const data = await s3Client.send(new DeleteObjectCommand(params));
-		return file.originalname;
+		return data;
 	} catch (err) {
 		console.error(err);
 		throw err;
 	}
 };
 
-export const getFile = async ({ folder = '', fileKey }) => {
+export const getFile = async ({ folder = '', filename }) => {
 	const params = {
 		Bucket: process.env.AWS_BUCKET_NAME,
-		Key: `${folder}${fileKey}`,
+		Key: `${folder}${filename}`,
 	};
 
 	try {

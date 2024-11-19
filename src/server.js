@@ -33,9 +33,12 @@ server.get(
 	})
 );
 
-// uploadFile();
-// deleteFile('gg.txt');
-// getFile({ fileKey: 'gg.txt' });
+// uploadFile({
+// 	file: { originalname: 'gg.pdf', buffer: 'hello' },
+// 	folder: 'cover_image/',
+// });
+// deleteFile({file:{originalname: 'gg.pdf'}, folder: 'cover_image/'});
+// getFile({ fileKey: 'gg.pdf', folder: 'cover_image/' });
 
 // listen
 server.listen(SERVER_PORT, () => {
