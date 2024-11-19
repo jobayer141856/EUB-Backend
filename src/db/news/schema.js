@@ -1,26 +1,19 @@
 import { sql } from 'drizzle-orm';
-import { integer, jsonb, pgSchema, text } from 'drizzle-orm/pg-core';
+import { jsonb, pgSchema, text } from 'drizzle-orm/pg-core';
 import * as hrSchema from '../hr/schema.js';
 import { DateTime, defaultUUID, uuid_primary } from '../variables.js';
-const news = pgSchema('news');
 
-export const news_portal_sequence = news.sequence('news_portal_sequence', {
-	start: 1,
-	increment: 1,
-});
+const news = pgSchema('news');
 
 export const news_portal = news.table('news_portal', {
 	uuid: uuid_primary,
-	id: integer('id')
-		.notNull()
-		.default(sql`nextval('news.news_portal_sequence')`),
 	title: text('title').notNull(),
-	sub_title: text('sub_title').notNull(),
-	cover_image: text('cover_image').default(null),
-	date: DateTime('date').notNull(),
-	document: jsonb('document').default([]),
+	subtitle: text('subtitle').default(null),
 	description: text('description').notNull(),
-	short_description: text('short_description').notNull(),
+	content: jsonb('content').default([]),
+	document: jsonb('document').default([]),
+	cover_image: text('cover_image').default(null),
+	published_date: DateTime('published_date').notNull(),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),

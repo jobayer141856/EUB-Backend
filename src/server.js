@@ -4,6 +4,7 @@ import { SERVER_PORT } from './lib/secret.js';
 import { VerifyToken } from './middleware/auth.js';
 import route from './routes/index.js';
 import swaggerSpec from './swagger.js';
+import { deleteFile, getFile, uploadFile } from './util/aws.js';
 import cors from './util/cors.js';
 
 const server = express();
@@ -31,6 +32,10 @@ server.get(
 		},
 	})
 );
+
+// uploadFile();
+// deleteFile('gg.txt');
+getFile({ fileKey: 'gg.txt' });
 
 // listen
 server.listen(SERVER_PORT, () => {

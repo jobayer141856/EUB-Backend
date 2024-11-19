@@ -6,6 +6,13 @@ export const pathNewsPortal = {
 			tags: ['news.news_portal'],
 			summary: 'Get all news',
 			description: 'Get all news',
+			parameters: [
+				SE.parameter_query('search', 'q'),
+				SE.parameter_query('page', 'page'),
+				SE.parameter_query('limit', 'limit'),
+				SE.parameter_query('sort', 'sort'),
+				SE.parameter_query('orderby', 'orderby'),
+			],
 			responses: {
 				200: {
 					description: 'Success',
