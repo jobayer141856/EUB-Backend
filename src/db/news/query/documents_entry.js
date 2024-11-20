@@ -174,6 +174,8 @@ export async function select(req, res, next) {
 export async function selectByNewsPortalUuid(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
+	console.log('req.params.uuid', req.params.news_portal_uuid);
+
 	const documents_entryPromise = db
 		.select({
 			uuid: documents_entry.uuid,
@@ -183,7 +185,9 @@ export async function selectByNewsPortalUuid(req, res, next) {
 			remarks: documents_entry.remarks,
 		})
 		.from(documents_entry)
-		.where(eq(documents_entry.news_portal_uuid, req.params.uuid));
+		.where(
+			eq(documents_entry.news_portal_uuid, req.params.news_portal_uuid)
+		);
 
 	try {
 		const data = await documents_entryPromise;
