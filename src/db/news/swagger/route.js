@@ -74,7 +74,7 @@ export const pathNewsPortal = {
 			summary: 'Get news details',
 			description: 'Get news details',
 			parameters: [
-				SE.parameter_query('Get news uuid', 'news_portal_uuid'),
+				SE.parameter_params('Get news uuid', 'news_portal_uuid'),
 			],
 			responses: {
 				200: SE.response_schema(200, {
@@ -151,7 +151,7 @@ export const pathNewsPortalEntry = {
 			summary: 'Get all news entry by news portal uuid',
 			description: 'Get all news entry by news portal uuid',
 			parameters: [
-				SE.parameter_query(
+				SE.parameter_params(
 					'get news news_portal_uuid',
 					'news_portal_uuid'
 				),
