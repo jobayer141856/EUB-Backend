@@ -1,4 +1,4 @@
-import { sql } from 'drizzle-orm';
+import { asc, desc, sql } from 'drizzle-orm';
 import {
 	decimal,
 	integer,

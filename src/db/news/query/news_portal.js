@@ -172,10 +172,10 @@ export async function selectAll(req, res, next) {
 		.orderBy(desc(news_portal.created_at));
 
 	try {
-		const resultPromiseForCount = await news_portalPromise;
+		const resultPromiseForCount = news_portalPromise;
 
 		const baseQuery = constructSelectAllQuery(
-			resultPromiseForCount,
+			news_portalPromise,
 			req.query,
 			'created_at',
 			[hrSchema.users.name]
@@ -184,9 +184,8 @@ export async function selectAll(req, res, next) {
 		const pagination = {
 			total_record: resultPromiseForCount.length,
 			current_page: Number(req.query.page) || 1,
-			total_page: Math.ceil(
-				resultPromiseForCount.length / req.query.limit
-			),
+			total_page:
+				Math.ceil(resultPromiseForCount.length / req.query.limit) || 1,
 			next_page:
 				Number(req.query.page) + 1 >
 				Math.ceil(resultPromiseForCount.length / req.query.limit)
