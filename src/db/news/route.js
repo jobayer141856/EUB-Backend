@@ -2,8 +2,8 @@ import { Router } from 'express';
 
 import { validateUuidParam } from '../../lib/validator.js';
 
+import * as documentsEntryOperations from './query/documents_entry.js';
 import * as newsOperations from './query/news_portal.js';
-import * as newsPortalEntryOperations from './query/documents_entry.js';
 
 // news routes
 const newsRouter = Router();
@@ -21,26 +21,26 @@ newsRouter.delete(
 newsRouter.get('/news-portal/latest-post', newsOperations.latestPost);
 
 // NOTE: news_portal_entry routes
-newsRouter.get('/news-portal-entry', newsPortalEntryOperations.selectAll);
+newsRouter.get('/documents-entry', documentsEntryOperations.selectAll);
 newsRouter.get(
-	'/news-portal-entry/:uuid',
+	'/documents-entry/:uuid',
 	validateUuidParam,
-	newsPortalEntryOperations.select
+	documentsEntryOperations.select
 );
-newsRouter.post('/news-portal-entry', newsPortalEntryOperations.insert);
+newsRouter.post('/documents-entry', documentsEntryOperations.insert);
 newsRouter.put(
-	'/news-portal-entry/:uuid',
+	'/documents-entry/:uuid',
 	validateUuidParam,
-	newsPortalEntryOperations.update
+	documentsEntryOperations.update
 );
 newsRouter.delete(
-	'/news-portal-entry/:uuid',
+	'/documents-entry/:uuid',
 	validateUuidParam,
-	newsPortalEntryOperations.remove
+	documentsEntryOperations.remove
 );
 newsRouter.get(
-	'/news-portal-entry/by/:news_portal_uuid',
-	newsPortalEntryOperations.selectByNewsPortalUuid
+	'/documents-entry/by/:news_portal_uuid',
+	documentsEntryOperations.selectByNewsPortalUuid
 );
 
 export { newsRouter };

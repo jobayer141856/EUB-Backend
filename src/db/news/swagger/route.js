@@ -14,7 +14,7 @@ export const pathNewsPortal = {
 				SE.parameter_query('orderby', 'orderby'),
 			],
 			responses: {
-				200: SE.response_schema_ref('news/news_portal'),
+				200: SE.response_schema_ref(200, 'news/news_portal'),
 			},
 		},
 		post: {
@@ -23,7 +23,7 @@ export const pathNewsPortal = {
 			description: 'Create a news',
 			requestBody: SE.requestBody_schema_ref('news/news_portal'),
 			responses: {
-				201: SE.response_schema_ref('news/news_portal'),
+				201: SE.response_schema_ref(201, 'news/news_portal'),
 			},
 		},
 	},
@@ -34,7 +34,7 @@ export const pathNewsPortal = {
 			description: 'Get a news',
 			parameters: [SE.parameter_params('Get news uuid', 'uuid')],
 			responses: {
-				200: SE.response_schema_ref('news/news_portal'),
+				200: SE.response_schema_ref(200, 'news/news_portal'),
 			},
 		},
 		put: {
@@ -44,7 +44,7 @@ export const pathNewsPortal = {
 			parameters: [SE.parameter_params('Get news uuid', 'uuid')],
 			requestBody: SE.requestBody_schema_ref('news/news_portal'),
 			responses: {
-				200: SE.response_schema_ref('news/news_portal'),
+				200: SE.response_schema_ref(200, 'news/news_portal'),
 			},
 		},
 
@@ -54,7 +54,7 @@ export const pathNewsPortal = {
 			description: 'Delete a news',
 			parameters: [SE.parameter_params('Get news uuid', 'uuid')],
 			responses: {
-				204: SE.response_schema_ref('news/news_portal'),
+				204: SE.response_schema_ref(204, 'news/news_portal'),
 			},
 		},
 	},
@@ -64,7 +64,7 @@ export const pathNewsPortal = {
 			summary: 'Get latest news',
 			description: 'Get 10 latest news',
 			responses: {
-				200: SE.response_schema_ref('news/news_portal'),
+				200: SE.response_schema_ref(200, 'news/news_portal'),
 			},
 		},
 	},
@@ -77,7 +77,7 @@ export const pathNewsPortalEntry = {
 			summary: 'Get all news entry',
 			description: 'Get all news entry',
 			responses: {
-				200: SE.response_schema_ref('news/documents_entry'),
+				200: SE.response_schema_ref(200, 'news/documents_entry'),
 			},
 		},
 		post: {
@@ -86,16 +86,7 @@ export const pathNewsPortalEntry = {
 			description: 'Create a news entry',
 			requestBody: SE.requestBody_schema_ref('news/documents_entry'),
 			responses: {
-				201: {
-					description: 'Created',
-					content: {
-						'application/json': {
-							schema: {
-								$ref: '##/definitions/news/documents_entry',
-							},
-						},
-					},
-				},
+				201: SE.response_schema_ref(201, 'news/documents_entry'),
 			},
 		},
 	},
@@ -106,7 +97,7 @@ export const pathNewsPortalEntry = {
 			description: 'Get a news entry',
 			parameters: [SE.parameter_params('Get news uuid', 'uuid')],
 			responses: {
-				200: SE.response_schema_ref('news/documents_entry'),
+				200: SE.response_schema_ref(200, 'news/documents_entry'),
 			},
 		},
 		put: {
@@ -116,7 +107,7 @@ export const pathNewsPortalEntry = {
 			parameters: [SE.parameter_params('Get news uuid', 'uuid')],
 			requestBody: SE.requestBody_schema_ref('news/documents_entry'),
 			responses: {
-				200: SE.response_schema_ref('news/documents_entry'),
+				200: SE.response_schema_ref(200, 'news/documents_entry'),
 			},
 		},
 	},
@@ -132,7 +123,7 @@ export const pathNewsPortalEntry = {
 				),
 			],
 			responses: {
-				200: SE.response_schema_ref('news/documents_entry'),
+				200: SE.response_schema_ref(200, 'news/documents_entry'),
 			},
 		},
 	},

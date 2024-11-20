@@ -24,7 +24,7 @@ export const defNewsPortal = SED({
 		updated_at: SE.date_time(),
 		remarks: SE.string(),
 	},
-	xml: 'News/Portal',
+	xml: 'News/News-Portal',
 });
 
 export const defDocumentsEntry = SED({
@@ -37,12 +37,12 @@ export const defDocumentsEntry = SED({
 		updated_at: SE.date_time(),
 		remarks: SE.string(),
 	},
-	xml: 'News/Portal/Entry',
+	xml: 'News/Documents-Entry',
 });
 
 export const defNews = {
 	news_portal: defNewsPortal,
-	news_portal_entry: defDocumentsEntry,
+	documents_entry: defDocumentsEntry,
 };
 
 export const tagNews = [
