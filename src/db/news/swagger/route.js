@@ -68,6 +68,40 @@ export const pathNewsPortal = {
 			},
 		},
 	},
+	'/news/news-portal-details/by/{news_portal_uuid}': {
+		get: {
+			tags: ['news.news_portal'],
+			summary: 'Get news details',
+			description: 'Get news details',
+			parameters: [
+				SE.parameter_query('Get news uuid', 'news_portal_uuid'),
+			],
+			responses: {
+				200: SE.response_schema(200, {
+					uuid: SE.uuid(),
+					title: SE.string('title'),
+					subtitle: SE.string('subtitle'),
+					description: SE.string('description'),
+					content: SE.string('content'),
+					cover_image: SE.string('url of image'),
+					published_date: SE.date_time(),
+					created_by: SE.uuid(),
+					created_by_name: SE.string('name'),
+					created_at: SE.date_time(),
+					updated_at: SE.date_time(),
+					remarks: SE.string('remarks'),
+					documents: SE.sub_response_schema({
+						uuid: SE.uuid(),
+						news_portal_uuid: SE.uuid(),
+						documents: SE.string('url of document'),
+						created_at: SE.date_time(),
+						updated_at: SE.date_time(),
+						remarks: SE.string('remarks'),
+					}),
+				}),
+			},
+		},
+	},
 };
 
 export const pathNewsPortalEntry = {

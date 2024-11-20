@@ -19,6 +19,10 @@ newsRouter.delete(
 	newsOperations.remove
 );
 newsRouter.get('/news-portal/latest-post', newsOperations.latestPost);
+newsRouter.get(
+	'/news-portal-details/by/:news_portal_uuid',
+	newsOperations.newsDetails
+);
 
 // NOTE: news_portal_entry routes
 newsRouter.get('/documents-entry', documentsEntryOperations.selectAll);

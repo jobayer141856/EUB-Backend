@@ -1,4 +1,5 @@
 import { desc, eq } from 'drizzle-orm';
+import { createApi } from '../../../util/api.js';
 import { deleteFile, getFile, uploadFile } from '../../../util/aws.js';
 import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
@@ -281,6 +282,39 @@ export async function latestPost(req, res, next) {
 			message: 'Latest post',
 		};
 		return await res.status(200).json({ toast, data });
+	} catch (error) {
+		await handleError({ error, res });
+	}
+}
+
+export async function newsDetails(req, res, next) {
+	if (!(await validateRequest(req, next))) return;
+	try {
+		const { news_portal_uuid } = req.params;
+		const api = await createApi(req);
+
+		const fetchData = async (endpoint) =>
+			await api
+				.get(`${endpoint}/${news_portal_uuid}`)
+				.then((response) => response);
+
+		const [news_portal, documents] = await Promise.all([
+			fetchData('/news/news-portal'),
+			fetchData('/news/documents-entry/by'),
+		]);
+
+		const response = {
+			...news_portal?.data?.data,
+			documents: documents?.data?.data || [],
+		};
+
+		const toast = {
+			status: 200,
+			type: 'select',
+			message: 'News details',
+		};
+
+		return await res.status(200).json({ toast, data: response });
 	} catch (error) {
 		await handleError({ error, res });
 	}
