@@ -4,7 +4,7 @@ import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { constructSelectAllQuery } from '../../variables.js';
-import { news_portal_entry } from '../schema.js';
+import { documents_entry } from '../schema.js';
 
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
@@ -12,7 +12,7 @@ export async function insert(req, res, next) {
 	// aws upload file
 	// document may have multiple files
 	// document may have only one file
-	const { document } = req.files;
+	const { documents } = req.files;
 
 	const documentPromise = await uploadFile({
 		file: document[0],
@@ -21,16 +21,16 @@ export async function insert(req, res, next) {
 
 	const { uuid, created_at, updated_at, remarks } = req.body;
 
-	const news_portal_entryPromise = db.insert(news_portal_entry).values({
+	const documents_entryPromise = db.insert(documents_entry).values({
 		uuid,
-		document: documentPromise,
+		documents: documentPromise,
 		created_at,
 		updated_at,
 		remarks,
 	});
 
 	try {
-		const data = await news_portal_entryPromise;
+		const data = await documents_entryPromise;
 		const toast = {
 			status: 201,
 			type: 'insert',
@@ -64,22 +64,22 @@ export async function update(req, res, next) {
 		documentString = coverImagePromise;
 	}
 
-	const { uuid, document, created_at, updated_at, remarks } = req.body;
+	const { uuid, documents, created_at, updated_at, remarks } = req.body;
 
-	const news_portal_entryPromise = db
-		.update(news_portal_entry)
+	const documents_entryPromise = db
+		.update(documents_entry)
 		.set({
 			uuid,
-			document: documentString ? documentString : document,
+			documents: documentString ? documentString : documents,
 			created_at,
 			updated_at,
 			remarks,
 		})
-		.where(eq(news_portal_entry.uuid, req.params.uuid))
-		.returning({ updatedName: news_portal_entry.title });
+		.where(eq(documents_entry.uuid, req.params.uuid))
+		.returning({ updatedName: documents_entry.title });
 
 	try {
-		const data = await news_portal_entryPromise;
+		const data = await documents_entryPromise;
 		const toast = {
 			status: 201,
 			type: 'update',
@@ -95,13 +95,13 @@ export async function update(req, res, next) {
 export async function remove(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 	// delete the record from db
-	const news_portal_entryPromise = db
-		.delete(news_portal_entry)
-		.where(eq(news_portal_entry.uuid, req.params.uuid))
-		.returning({ deletedName: news_portal_entry.title });
+	const documents_entryPromise = db
+		.delete(documents_entry)
+		.where(eq(documents_entry.uuid, req.params.uuid))
+		.returning({ deletedName: documents_entry.title });
 
 	try {
-		const data = await news_portal_entryPromise;
+		const data = await documents_entryPromise;
 		const toast = {
 			status: 200,
 			type: 'delete',
@@ -115,24 +115,24 @@ export async function remove(req, res, next) {
 }
 
 export async function selectAll(req, res, next) {
-	const news_portal_entryPromise = db
+	const documents_entryPromise = db
 		.select({
-			uuid: news_portal_entry.uuid,
-			document: news_portal_entry.document,
-			created_at: news_portal_entry.created_at,
-			updated_at: news_portal_entry.updated_at,
-			remarks: news_portal_entry.remarks,
+			uuid: documents_entry.uuid,
+			document: documents_entry.documents,
+			created_at: documents_entry.created_at,
+			updated_at: documents_entry.updated_at,
+			remarks: documents_entry.remarks,
 		})
-		.from(news_portal_entry)
-		.orderBy(desc(news_portal_entry.created_at));
+		.from(documents_entry)
+		.orderBy(desc(documents_entry.created_at));
 
 	try {
-		const resultPromiseForCount = await news_portal_entryPromise;
+		const resultPromiseForCount = await documents_entryPromise;
 
 		const toast = {
 			status: 200,
 			type: 'select all',
-			message: 'All news portal entry',
+			message: 'All documents entry',
 		};
 		return await res.status(200).json({
 			toast,
@@ -146,24 +146,24 @@ export async function selectAll(req, res, next) {
 export async function select(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const news_portal_entryPromise = db
+	const documents_entryPromise = db
 		.select({
-			uuid: news_portal_entry.uuid,
-			document: news_portal_entry.document,
-			created_at: news_portal_entry.created_at,
-			updated_at: news_portal_entry.updated_at,
-			remarks: news_portal_entry.remarks,
+			uuid: documents_entry.uuid,
+			documents: documents_entry.documents,
+			created_at: documents_entry.created_at,
+			updated_at: documents_entry.updated_at,
+			remarks: documents_entry.remarks,
 		})
-		.from(news_portal_entry)
-		.where(eq(news_portal_entry.uuid, req.params.uuid));
+		.from(documents_entry)
+		.where(eq(documents_entry.uuid, req.params.uuid));
 
 	try {
-		const data = await news_portal_entryPromise;
+		const data = await documents_entryPromise;
 
 		const toast = {
 			status: 200,
 			type: 'select',
-			message: 'News portal entry',
+			message: 'documents entry',
 		};
 		return await res.status(200).json({ toast, data: data[0] });
 	} catch (error) {
@@ -174,24 +174,24 @@ export async function select(req, res, next) {
 export async function selectByNewsPortalUuid(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	const news_portal_entryPromise = db
+	const documents_entryPromise = db
 		.select({
-			uuid: news_portal_entry.uuid,
-			document: news_portal_entry.document,
-			created_at: news_portal_entry.created_at,
-			updated_at: news_portal_entry.updated_at,
-			remarks: news_portal_entry.remarks,
+			uuid: documents_entry.uuid,
+			document: documents_entry.documents,
+			created_at: documents_entry.created_at,
+			updated_at: documents_entry.updated_at,
+			remarks: documents_entry.remarks,
 		})
-		.from(news_portal_entry)
-		.where(eq(news_portal_entry.news_portal_uuid, req.params.uuid));
+		.from(documents_entry)
+		.where(eq(documents_entry.news_portal_uuid, req.params.uuid));
 
 	try {
-		const data = await news_portal_entryPromise;
+		const data = await documents_entryPromise;
 
 		const toast = {
 			status: 200,
 			type: 'select',
-			message: 'News portal entry',
+			message: 'documents entry',
 		};
 		return await res.status(200).json({ toast, data });
 	} catch (error) {

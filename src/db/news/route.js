@@ -3,7 +3,7 @@ import { Router } from 'express';
 import { validateUuidParam } from '../../lib/validator.js';
 
 import * as newsOperations from './query/news_portal.js';
-import * as newsPortalEntryOperations from './query/news_portal_entry.js';
+import * as newsPortalEntryOperations from './query/documents_entry.js';
 
 // news routes
 const newsRouter = Router();

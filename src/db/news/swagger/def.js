@@ -17,7 +17,6 @@ export const defNewsPortal = SED({
 		subtitle: SE.string(),
 		description: SE.string(),
 		content: SE.string(),
-		document: SE.string(),
 		cover_image: SE.string(),
 		published_date: SE.date_time(),
 		created_by: SE.uuid(),
@@ -28,12 +27,12 @@ export const defNewsPortal = SED({
 	xml: 'News/Portal',
 });
 
-export const defNewsPortalEntry = SED({
-	required: ['uuid', 'news_portal_uuid', 'document', 'created_at'],
+export const defDocumentsEntry = SED({
+	required: ['uuid', 'news_portal_uuid', 'documents', 'created_at'],
 	properties: {
 		uuid: SE.uuid(),
 		news_portal_uuid: SE.uuid(),
-		document: SE.string(),
+		documents: SE.string(),
 		created_at: SE.date_time(),
 		updated_at: SE.date_time(),
 		remarks: SE.string(),
@@ -43,7 +42,7 @@ export const defNewsPortalEntry = SED({
 
 export const defNews = {
 	news_portal: defNewsPortal,
-	news_portal_entry: defNewsPortalEntry,
+	news_portal_entry: defDocumentsEntry,
 };
 
 export const tagNews = [
@@ -52,7 +51,7 @@ export const tagNews = [
 		description: 'Everything about your News Portal',
 	},
 	{
-		name: 'news.news_portal_entry',
+		name: 'news.documents_entry',
 		description: 'Everything about your News Portal Entry',
 	},
 ];

@@ -71,34 +71,27 @@ export const pathNewsPortal = {
 };
 
 export const pathNewsPortalEntry = {
-	'/news/news-portal-entry': {
+	'/news/documents-entry': {
 		get: {
-			tags: ['news.news_portal_entry'],
+			tags: ['news.documents_entry'],
 			summary: 'Get all news entry',
 			description: 'Get all news entry',
-			parameters: [
-				SE.parameter_query('search', 'q'),
-				SE.parameter_query('page', 'page'),
-				SE.parameter_query('limit', 'limit'),
-				SE.parameter_query('sort', 'sort'),
-				SE.parameter_query('orderby', 'orderby'),
-			],
 			responses: {
-				200: SE.response_schema_ref('news/news_portal_entry'),
+				200: SE.response_schema_ref('news/documents_entry'),
 			},
 		},
 		post: {
-			tags: ['news.news_portal_entry'],
+			tags: ['news.documents_entry'],
 			summary: 'Create a news entry',
 			description: 'Create a news entry',
-			requestBody: SE.requestBody_schema_ref('news/news_portal_entry'),
+			requestBody: SE.requestBody_schema_ref('news/documents_entry'),
 			responses: {
 				201: {
 					description: 'Created',
 					content: {
 						'application/json': {
 							schema: {
-								$ref: '##/definitions/news/news_portal_entry',
+								$ref: '##/definitions/news/documents_entry',
 							},
 						},
 					},
@@ -106,30 +99,30 @@ export const pathNewsPortalEntry = {
 			},
 		},
 	},
-	'/news/news-portal-entry/{uuid}': {
+	'/news/documents-entry/{uuid}': {
 		get: {
-			tags: ['news.news_portal_entry'],
+			tags: ['news.documents_entry'],
 			summary: 'Get a news entry',
 			description: 'Get a news entry',
 			parameters: [SE.parameter_params('Get news uuid', 'uuid')],
 			responses: {
-				200: SE.response_schema_ref('news/news_portal_entry'),
+				200: SE.response_schema_ref('news/documents_entry'),
 			},
 		},
 		put: {
-			tags: ['news.news_portal_entry'],
+			tags: ['news.documents_entry'],
 			summary: 'Update a news entry',
 			description: 'Update a news entry',
 			parameters: [SE.parameter_params('Get news uuid', 'uuid')],
-			requestBody: SE.requestBody_schema_ref('news/news_portal_entry'),
+			requestBody: SE.requestBody_schema_ref('news/documents_entry'),
 			responses: {
-				200: SE.response_schema_ref('news/news_portal_entry'),
+				200: SE.response_schema_ref('news/documents_entry'),
 			},
 		},
 	},
-	'/news/news-portal-entry/by/{news_portal_uuid}': {
+	'/news/documents-entry/by/{news_portal_uuid}': {
 		get: {
-			tags: ['news.news_portal_entry'],
+			tags: ['news.documents_entry'],
 			summary: 'Get all news entry by news portal uuid',
 			description: 'Get all news entry by news portal uuid',
 			parameters: [
@@ -139,7 +132,7 @@ export const pathNewsPortalEntry = {
 				),
 			],
 			responses: {
-				200: SE.response_schema_ref('news/news_portal_entry'),
+				200: SE.response_schema_ref('news/documents_entry'),
 			},
 		},
 	},

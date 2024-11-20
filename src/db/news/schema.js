@@ -19,12 +19,12 @@ export const news_portal = news.table('news_portal', {
 	remarks: text('remarks').default(null),
 });
 
-export const news_portal_entry = news.table('news_portal_entry', {
+export const documents_entry = news.table('documents_entry', {
 	uuid: uuid_primary,
 	news_portal_uuid: defaultUUID('news_portal_uuid').references(
 		() => news_portal.uuid
 	),
-	document: text('document').notNull().default(null),
+	documents: text('documents').notNull().default(null),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),
