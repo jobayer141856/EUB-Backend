@@ -1,10 +1,8 @@
 import {
 	DeleteObjectCommand,
-	GetObjectCommand,
 	PutObjectCommand,
 	S3Client,
 } from '@aws-sdk/client-s3';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 const s3Client = new S3Client({
 	region: process.env.AWS_REGION,
@@ -20,13 +18,12 @@ export const uploadFile = async ({ file, folder = '' }) => {
 		Bucket: process.env.AWS_BUCKET_NAME,
 		Key: key,
 		Body: file.buffer,
+		ACL: 'public-read', // Set ACL to public-read
 	};
 
 	try {
-		const data = await s3Client.send(new PutObjectCommand(params));
-		const url = await getSignedUrl(s3Client, new PutObjectCommand(params), {
-			expiresIn: 3600,
-		});
+		await s3Client.send(new PutObjectCommand(params));
+		const url = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
 		return url;
 	} catch (err) {
 		console.error(err);
@@ -51,14 +48,10 @@ export const deleteFile = async ({ filename, folder = '' }) => {
 };
 
 export const getFile = async ({ folder = '', filename }) => {
-	const params = {
-		Bucket: process.env.AWS_BUCKET_NAME,
-		Key: `${folder}${filename}`,
-	};
+	const key = `${folder}${filename}`;
+	const url = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
 
 	try {
-		const command = new GetObjectCommand(params);
-		const url = await getSignedUrl(s3Client, command, { expiresIn: 3600 }); // URL expires in 1 hour
 		console.log('File URL:', url);
 		return url;
 	} catch (err) {
