@@ -24,7 +24,10 @@ export const uploadFile = async ({ file, folder = '' }) => {
 
 	try {
 		const data = await s3Client.send(new PutObjectCommand(params));
-		return file.originalname;
+		const url = await getSignedUrl(s3Client, new PutObjectCommand(params), {
+			expiresIn: 3600,
+		});
+		return url;
 	} catch (err) {
 		console.error(err);
 		throw err;

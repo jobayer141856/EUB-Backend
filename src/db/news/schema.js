@@ -11,10 +11,20 @@ export const news_portal = news.table('news_portal', {
 	subtitle: text('subtitle').default(null),
 	description: text('description').notNull(),
 	content: jsonb('content').default([]),
-	document: jsonb('document').default([]),
 	cover_image: text('cover_image').default(null),
 	published_date: DateTime('published_date').notNull(),
 	created_by: defaultUUID('created_by').references(() => hrSchema.users.uuid),
+	created_at: DateTime('created_at').notNull(),
+	updated_at: DateTime('updated_at').default(null),
+	remarks: text('remarks').default(null),
+});
+
+export const news_portal_entry = news.table('news_portal_entry', {
+	uuid: uuid_primary,
+	news_portal_uuid: defaultUUID('news_portal_uuid').references(
+		() => news_portal.uuid
+	),
+	document: text('document').notNull().default(null),
 	created_at: DateTime('created_at').notNull(),
 	updated_at: DateTime('updated_at').default(null),
 	remarks: text('remarks').default(null),

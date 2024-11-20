@@ -12,26 +12,12 @@ export async function insert(req, res, next) {
 	// aws upload file
 	// document may have multiple files
 	// cover_image may have only one file
-	const { document, cover_image } = req.files;
-
-	const documentPromise = await Promise.all(
-		document.map(async (file) => {
-			const filename = await uploadFile({
-				file,
-				folder: 'document/',
-			});
-			return filename;
-		})
-	);
+	const { cover_image } = req.files;
 
 	const cover_imagePromise = await uploadFile({
 		file: cover_image[0],
 		folder: 'cover_image/',
 	});
-
-	// join all the document file name with comma and insert into db
-	const documentString = documentPromise.join(',');
-	const cover_imageString = cover_imagePromise;
 
 	const {
 		uuid,
@@ -52,8 +38,7 @@ export async function insert(req, res, next) {
 		subtitle,
 		description,
 		content,
-		document: documentString,
-		cover_image: cover_imageString,
+		cover_image: cover_imagePromise,
 		published_date,
 		created_by,
 		created_at,
@@ -81,43 +66,20 @@ export async function update(req, res, next) {
 	// aws upload file
 	// document may have multiple files
 	// cover_image may have only one file
-	const { document, cover_image } = req.files;
+	const { new_cover_image } = req.files;
 
-	// check if the file already exist in the db
-	const news_portalPromiseForCheck = db
-		.select({
-			document: news_portal.document,
-			cover_image: news_portal.cover_image,
-		})
-		.from(news_portal)
-		.where(eq(news_portal.uuid, req.params.uuid));
+	let cover_imageString = null;
 
-	const { document: oldDocument, cover_image: oldCoverImage } =
-		await news_portalPromiseForCheck;
+	if (!new_cover_image) {
+		// Upload new cover image file only if it is different
+		let coverImagePromise = new_cover_image;
+		coverImagePromise = await uploadFile({
+			file: new_cover_image[0],
+			folder: 'cover_image/',
+		});
 
-	// Upload new document files only
-	const documentPromise = await Promise.all(
-		document.map(async (file) => {
-			if (!oldDocument.includes(file.originalname)) {
-				const filename = await uploadFile(file, 'document/');
-				return filename;
-			}
-			return null;
-		})
-	);
-
-	// Filter out null values
-	const newDocumentFiles = documentPromise.filter((file) => file !== null);
-
-	// Upload new cover image file only if it is different
-	let coverImagePromise = oldCoverImage;
-	if (cover_image[0].originalname !== oldCoverImage) {
-		coverImagePromise = await uploadFile(cover_image[0], 'cover_image/');
+		cover_imageString = coverImagePromise;
 	}
-
-	// join all the document file name with comma and insert into db
-	const documentString = documentPromise.join(',');
-	const cover_imageString = coverImagePromise;
 
 	const {
 		uuid,
@@ -125,6 +87,7 @@ export async function update(req, res, next) {
 		subtitle,
 		description,
 		content,
+		cover_image,
 		published_date,
 		created_by,
 		created_at,
@@ -140,8 +103,7 @@ export async function update(req, res, next) {
 			subtitle,
 			description,
 			content,
-			document: documentString,
-			cover_image: cover_imageString,
+			cover_image: cover_imageString ? cover_imageString : cover_image,
 			published_date,
 			created_by,
 			created_at,
@@ -154,7 +116,7 @@ export async function update(req, res, next) {
 	try {
 		const data = await news_portalPromise;
 		const toast = {
-			status: 200,
+			status: 201,
 			type: 'update',
 			message: `${data[0].updatedName} updated`,
 		};
@@ -167,35 +129,6 @@ export async function update(req, res, next) {
 
 export async function remove(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
-
-	// check if the file already exist in the db
-	const news_portalPromiseForCheck = db
-		.select({
-			document: news_portal.document,
-			cover_image: news_portal.cover_image,
-		})
-		.from(news_portal)
-		.where(eq(news_portal.uuid, req.params.uuid));
-
-	const { document: oldDocument, cover_image: oldCoverImage } =
-		await news_portalPromiseForCheck;
-
-	// delete the file from aws s3
-	const documentPromise = await Promise.all(
-		oldDocument.split(',').map(async (file) => {
-			const filename = await deleteFile({
-				filename: file,
-				folder: 'document/',
-			});
-			return filename;
-		})
-	);
-
-	const cover_imagePromise = await deleteFile({
-		filename: oldCoverImage,
-		folder: 'cover_image/',
-	});
-
 	// delete the record from db
 	const news_portalPromise = db
 		.delete(news_portal)
@@ -223,7 +156,6 @@ export async function selectAll(req, res, next) {
 			title: news_portal.title,
 			subtitle: news_portal.subtitle,
 			description: news_portal.description,
-			document: news_portal.document,
 			cover_image: news_portal.cover_image,
 			published_date: news_portal.published_date,
 			created_by: news_portal.created_by,
@@ -241,34 +173,6 @@ export async function selectAll(req, res, next) {
 
 	try {
 		const resultPromiseForCount = await news_portalPromise;
-
-		// get files from aws s3
-		const document_files = await Promise.all(
-			resultPromiseForCount.map(async (news) => {
-				const file = await getFile({
-					filename: news.document,
-					folder: 'document/',
-				});
-				return file;
-			})
-		);
-
-		const cover_image_files = await Promise.all(
-			resultPromiseForCount.map(async (news) => {
-				const file = await getFile({
-					filename: news.cover_image,
-					folder: 'cover_image/',
-				});
-				return file;
-			})
-		);
-
-		resultPromiseForCount.forEach((news, index) => {
-			news.document = document_files[index];
-			news.cover_image = cover_image_files
-				? cover_image_files[index]
-				: null;
-		});
 
 		const baseQuery = constructSelectAllQuery(
 			resultPromiseForCount,
@@ -317,7 +221,6 @@ export async function select(req, res, next) {
 			title: news_portal.title,
 			subtitle: news_portal.subtitle,
 			description: news_portal.description,
-			document: news_portal.document,
 			cover_image: news_portal.cover_image,
 			published_date: news_portal.published_date,
 			created_by: news_portal.created_by,
@@ -335,20 +238,6 @@ export async function select(req, res, next) {
 
 	try {
 		const data = await news_portalPromise;
-
-		// get files from aws s3
-		const document_files = await getFile({
-			filename: data[0].document,
-			folder: 'document/',
-		});
-
-		const cover_image_files = await getFile({
-			filename: data[0].cover_image,
-			folder: 'cover_image/',
-		});
-
-		data[0].document = document_files;
-		data[0].cover_image = cover_image_files ? cover_image_files : null;
 
 		const toast = {
 			status: 200,
@@ -371,31 +260,21 @@ export async function latestPost(req, res, next) {
 			cover_image: news_portal.cover_image,
 			published_date: news_portal.published_date,
 			created_by: news_portal.created_by,
+			created_by_name: hrSchema.users.name,
 			created_at: news_portal.created_at,
 			updated_at: news_portal.updated_at,
 			remarks: news_portal.remarks,
 		})
 		.from(news_portal)
+		.leftJoin(
+			hrSchema.users,
+			eq(news_portal.created_by, hrSchema.users.uuid)
+		)
 		.orderBy(desc(news_portal.created_at))
 		.limit(10);
 
 	try {
 		const data = await news_portalPromise;
-
-		// get files from aws s3
-		const cover_image_files = await Promise.all(
-			data.map(async (news) => {
-				const file = await getFile({
-					filename: news.cover_image,
-					folder: 'cover_image/',
-				});
-				return file;
-			})
-		);
-
-		data.forEach((news, index) => {
-			news.cover_image = cover_image_files[index];
-		});
 
 		const toast = {
 			status: 200,

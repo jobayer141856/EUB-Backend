@@ -38,7 +38,7 @@ server.get(
 // 	folder: 'cover_image/',
 // });
 // deleteFile({file:{originalname: 'gg.pdf'}, folder: 'cover_image/'});
-// getFile({ fileKey: 'gg.pdf', folder: 'cover_image/' });
+// getFile({ filename: 'nine.pdf', folder: 'document/' });
 
 // listen
 server.listen(SERVER_PORT, () => {
