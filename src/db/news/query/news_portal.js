@@ -13,12 +13,12 @@ export async function insert(req, res, next) {
 	// aws upload file
 	// document may have multiple files
 	// cover_image may have only one file
-	const { cover_image } = req.file;
+	// const { cover_image } = req.file;
 
-	const cover_imagePromise = await uploadFile({
-		file: cover_image,
-		folder: 'cover_image/',
-	});
+	// const cover_imagePromise = await uploadFile({
+	// 	file: cover_image,
+	// 	folder: 'cover_image/',
+	// });
 
 	const {
 		uuid,
@@ -39,7 +39,7 @@ export async function insert(req, res, next) {
 		subtitle,
 		description,
 		content,
-		cover_image: cover_imagePromise,
+		// cover_image: cover_imagePromise,
 		published_date,
 		created_by,
 		created_at,
@@ -66,20 +66,20 @@ export async function update(req, res, next) {
 
 	// aws upload file
 	// cover_image have only one file
-	const { new_cover_image } = req.file;
+	// const { new_cover_image } = req.file;
 
-	let cover_imageString = null;
+	// let cover_imageString = null;
 
-	if (!new_cover_image) {
-		// Upload new cover image file only if it is different
-		let coverImagePromise = new_cover_image;
-		coverImagePromise = await uploadFile({
-			file: new_cover_image,
-			folder: 'cover_image/',
-		});
+	// if (!new_cover_image) {
+	// 	// Upload new cover image file only if it is different
+	// 	let coverImagePromise = new_cover_image;
+	// 	coverImagePromise = await uploadFile({
+	// 		file: new_cover_image,
+	// 		folder: 'cover_image/',
+	// 	});
 
-		cover_imageString = coverImagePromise;
-	}
+	// 	cover_imageString = coverImagePromise;
+	// }
 
 	const {
 		uuid,
@@ -103,7 +103,7 @@ export async function update(req, res, next) {
 			subtitle,
 			description,
 			content,
-			cover_image: cover_imageString ? cover_imageString : cover_image,
+			// cover_image: cover_imageString ? cover_imageString : cover_image,
 			published_date,
 			created_by,
 			created_at,

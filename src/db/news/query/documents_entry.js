@@ -11,18 +11,18 @@ export async function insert(req, res, next) {
 
 	// aws upload file
 	// document have only one file
-	const { documents } = req.file;
+	// const { documents } = req.file;
 
-	const documentPromise = await uploadFile({
-		file: documents,
-		folder: 'document/',
-	});
+	// const documentPromise = await uploadFile({
+	// 	file: documents,
+	// 	folder: 'document/',
+	// });
 
 	const { uuid, created_at, updated_at, remarks } = req.body;
 
 	const documents_entryPromise = db.insert(documents_entry).values({
 		uuid,
-		documents: documentPromise,
+		// documents: documentPromise,
 		created_at,
 		updated_at,
 		remarks,
@@ -47,20 +47,20 @@ export async function update(req, res, next) {
 
 	// aws upload file
 	// document may have only one file
-	const { new_documents } = req.file;
+	// const { new_documents } = req.file;
 
-	let documentString = null;
+	// let documentString = null;
 
-	if (!new_documents) {
-		// Upload new cover image file only if it is different
-		let coverImagePromise = new_documents;
-		coverImagePromise = await uploadFile({
-			file: new_documents,
-			folder: 'document/',
-		});
+	// if (!new_documents) {
+	// 	// Upload new cover image file only if it is different
+	// 	let coverImagePromise = new_documents;
+	// 	coverImagePromise = await uploadFile({
+	// 		file: new_documents,
+	// 		folder: 'document/',
+	// 	});
 
-		documentString = coverImagePromise;
-	}
+	// 	documentString = coverImagePromise;
+	// }
 
 	const { uuid, documents, created_at, updated_at, remarks } = req.body;
 
@@ -68,7 +68,7 @@ export async function update(req, res, next) {
 		.update(documents_entry)
 		.set({
 			uuid,
-			documents: documentString ? documentString : documents,
+			// documents: documentString ? documentString : documents,
 			created_at,
 			updated_at,
 			remarks,
