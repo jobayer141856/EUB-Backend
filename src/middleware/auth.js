@@ -50,18 +50,20 @@ export const VerifyToken = (req, res, next) => {
 		return next();
 	}
 
-	if (typeof authorization === 'undefined') {
-		return res.status(401).json({ error: 'Unauthorized' });
-	}
+	return next();
 
-	const token = authorization?.split(' ')[1];
-	verify(token, PRIVATE_KEY, (err, user) => {
-		if (err) {
-			return res.status(403).json({ error: 'Forbidden' });
-		}
+	// if (typeof authorization === 'undefined') {
+	// 	return res.status(401).json({ error: 'Unauthorized' });
+	// }
 
-		req.user = user;
+	// const token = authorization?.split(' ')[1];
+	// verify(token, PRIVATE_KEY, (err, user) => {
+	// 	if (err) {
+	// 		return res.status(403).json({ error: 'Forbidden' });
+	// 	}
 
-		next();
-	});
+	// 	req.user = user;
+
+	// 	next();
+	// });
 };
