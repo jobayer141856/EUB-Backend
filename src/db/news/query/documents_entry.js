@@ -20,13 +20,16 @@ export async function insert(req, res, next) {
 
 	const { uuid, created_at, updated_at, remarks } = req.body;
 
-	const documents_entryPromise = db.insert(documents_entry).values({
-		uuid,
-		// documents: documentPromise,
-		created_at,
-		updated_at,
-		remarks,
-	});
+	const documents_entryPromise = db
+		.insert(documents_entry)
+		.values({
+			uuid,
+			// documents: documentPromise,
+			created_at,
+			updated_at,
+			remarks,
+		})
+		.returning({ insertedName: documents_entry.uuid });
 
 	try {
 		const data = await documents_entryPromise;
@@ -74,7 +77,7 @@ export async function update(req, res, next) {
 			remarks,
 		})
 		.where(eq(documents_entry.uuid, req.params.uuid))
-		.returning({ updatedName: documents_entry.title });
+		.returning({ updatedName: documents_entry.uuid });
 
 	try {
 		const data = await documents_entryPromise;

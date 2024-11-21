@@ -33,19 +33,22 @@ export async function insert(req, res, next) {
 		remarks,
 	} = req.body;
 
-	const news_portalPromise = db.insert(news_portal).values({
-		uuid,
-		title,
-		subtitle,
-		description,
-		content,
-		// cover_image: cover_imagePromise,
-		published_date,
-		created_by,
-		created_at,
-		updated_at,
-		remarks,
-	});
+	const news_portalPromise = db
+		.insert(news_portal)
+		.values({
+			uuid,
+			title,
+			subtitle,
+			description,
+			content,
+			// cover_image: cover_imagePromise,
+			published_date,
+			created_by,
+			created_at,
+			updated_at,
+			remarks,
+		})
+		.returning({ insertedName: news_portal.title });
 
 	try {
 		const data = await news_portalPromise;
