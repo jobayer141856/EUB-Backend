@@ -10,12 +10,11 @@ export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	// aws upload file
-	// document may have multiple files
-	// document may have only one file
-	const { documents } = req.files;
+	// document have only one file
+	const { documents } = req.file;
 
 	const documentPromise = await uploadFile({
-		file: documents[0],
+		file: documents,
 		folder: 'document/',
 	});
 
@@ -47,9 +46,8 @@ export async function update(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
 	// aws upload file
-	// document may have multiple files
 	// document may have only one file
-	const { new_documents } = req.files;
+	const { new_documents } = req.file;
 
 	let documentString = null;
 
@@ -57,7 +55,7 @@ export async function update(req, res, next) {
 		// Upload new cover image file only if it is different
 		let coverImagePromise = new_documents;
 		coverImagePromise = await uploadFile({
-			file: new_documents[0],
+			file: new_documents,
 			folder: 'document/',
 		});
 
