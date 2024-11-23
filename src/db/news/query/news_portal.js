@@ -13,12 +13,11 @@ export async function insert(req, res, next) {
 	// aws upload file
 	// document may have multiple files
 	// cover_image may have only one file
-	// const { cover_image } = req.file;
 
-	// const cover_imagePromise = await uploadFile({
-	// 	file: cover_image,
-	// 	folder: 'cover_image/',
-	// });
+	const cover_imagePromise = await uploadFile({
+		file: req.file,
+		folder: 'cover_image/',
+	});
 
 	const {
 		uuid,
@@ -41,7 +40,7 @@ export async function insert(req, res, next) {
 			subtitle,
 			description,
 			content,
-			// cover_image: cover_imagePromise,
+			cover_image: cover_imagePromise,
 			published_date,
 			created_by,
 			created_at,

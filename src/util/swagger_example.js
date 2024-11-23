@@ -62,9 +62,15 @@ const SE = {
 		type: 'array',
 		items,
 	}),
+
 	jsonb: (example = []) => ({
 		type: 'object',
 		example,
+	}),
+
+	image: () => ({
+		type: 'string',
+		format: 'binary',
 	}),
 
 	// * Others
@@ -120,6 +126,20 @@ const SE = {
 		return {
 			content: {
 				'application/json': {
+					schema: {
+						type: 'object',
+						properties,
+						required,
+					},
+				},
+			},
+		};
+	},
+	// * requestBody
+	requestBody_image: (properties = {}, required = []) => {
+		return {
+			content: {
+				'multipart/form-data': {
 					schema: {
 						type: 'object',
 						properties,
