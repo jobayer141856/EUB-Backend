@@ -4,6 +4,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { createApi } from '../../../util/api.js';
 import { handleError, validateRequest } from '../../../util/index.js';
+import { generateSignedUrl } from '../../../util/signed_url.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { constructSelectAllQuery } from '../../variables.js';
@@ -254,10 +255,12 @@ export async function selectAll(req, res, next) {
 
 		const data = await baseQuery;
 
+		console.log(data, 'data');
+
 		const newsItemsWithImageUrl = data.map((item) => ({
 			...item,
 			cover_image: item.cover_image
-				? `${SERVER_URL}/${item.cover_image}`
+				? `${generateSignedUrl(`${item.cover_image}`, 3600)}`
 				: null,
 		}));
 
