@@ -1,23 +1,31 @@
 import { desc, eq } from 'drizzle-orm';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { createApi } from '../../../util/api.js';
-import { deleteFile, getFile, uploadFile } from '../../../util/aws.js';
 import { handleError, validateRequest } from '../../../util/index.js';
 import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
 import { constructSelectAllQuery } from '../../variables.js';
 import { news_portal } from '../schema.js';
 
+const SERVER_URL = process.env.SERVER_URL;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 export async function insert(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	// aws upload file
-	// document may have multiple files
-	// cover_image may have only one file
+	const { cover_image } = req.files;
 
-	const cover_imagePromise = await uploadFile({
-		file: req.file,
-		folder: 'cover_image/',
-	});
+	let cover_image_url = null;
+	if (cover_image && cover_image.length > 0) {
+		cover_image_url = path.join(
+			'uploads',
+			'cover_image',
+			cover_image[0].filename
+		);
+	}
 
 	const {
 		uuid,
@@ -40,7 +48,7 @@ export async function insert(req, res, next) {
 			subtitle,
 			description,
 			content,
-			cover_image: cover_imagePromise,
+			cover_image: cover_image_url,
 			published_date,
 			created_by,
 			created_at,
@@ -66,22 +74,46 @@ export async function insert(req, res, next) {
 export async function update(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
 
-	// aws upload file
-	// cover_image have only one file
-	// const { new_cover_image } = req.file;
+	const { cover_image } = req.files;
 
-	// let cover_imageString = null;
+	let cover_imageString = null;
+	if (cover_image && cover_image.length > 0) {
+		cover_imageString = path.join(
+			'uploads',
+			'cover_image',
+			cover_image[0].filename
+		);
+	}
 
-	// if (!new_cover_image) {
-	// 	// Upload new cover image file only if it is different
-	// 	let coverImagePromise = new_cover_image;
-	// 	coverImagePromise = await uploadFile({
-	// 		file: new_cover_image,
-	// 		folder: 'cover_image/',
-	// 	});
+	// delete the previous image from node local storage using fs
+	if (cover_imageString) {
+		const previousCoverImage = await db
+			.select({ cover_image: news_portal.cover_image })
+			.from(news_portal)
+			.where(eq(news_portal.uuid, req.params.uuid));
 
-	// 	cover_imageString = coverImagePromise;
-	// }
+		if (
+			previousCoverImage.length > 0 &&
+			previousCoverImage[0].cover_image
+		) {
+			const previousImagePath = path.join(
+				__dirname,
+				'../../../../',
+				previousCoverImage[0].cover_image
+			);
+			console.log(previousImagePath);
+			if (fs.existsSync(previousImagePath)) {
+				fs.unlinkSync(previousImagePath);
+				console.log('File deleted successfully');
+			} else {
+				console.log('File does not exist:', previousImagePath);
+			}
+		}
+	}
+
+	const cover_image_url = cover_imageString
+		? cover_imageString
+		: req.body.cover_image;
 
 	const {
 		uuid,
@@ -89,7 +121,6 @@ export async function update(req, res, next) {
 		subtitle,
 		description,
 		content,
-		cover_image,
 		published_date,
 		created_by,
 		created_at,
@@ -105,7 +136,7 @@ export async function update(req, res, next) {
 			subtitle,
 			description,
 			content,
-			// cover_image: cover_imageString ? cover_imageString : cover_image,
+			cover_image: cover_image_url,
 			published_date,
 			created_by,
 			created_at,
@@ -131,13 +162,37 @@ export async function update(req, res, next) {
 
 export async function remove(req, res, next) {
 	if (!(await validateRequest(req, next))) return;
-	// delete the record from db
-	const news_portalPromise = db
-		.delete(news_portal)
-		.where(eq(news_portal.uuid, req.params.uuid))
-		.returning({ deletedName: news_portal.title });
-
 	try {
+		// also delete the cover_image from node local storage using fs
+		const coverImage = await db
+			.select({ cover_image: news_portal.cover_image })
+			.from(news_portal)
+			.where(eq(news_portal.uuid, req.params.uuid));
+
+		console.log(coverImage);
+
+		if (coverImage.length > 0 && coverImage[0].cover_image) {
+			const deleteImagePath = path.join(
+				__dirname,
+				'../../../../',
+				coverImage[0].cover_image
+			);
+			console.log(deleteImagePath);
+
+			if (fs.existsSync(deleteImagePath)) {
+				fs.unlinkSync(deleteImagePath);
+				console.log('File deleted successfully');
+			} else {
+				console.log('File does not exist:', deleteImagePath);
+			}
+		}
+
+		// delete the record from db
+		const news_portalPromise = db
+			.delete(news_portal)
+			.where(eq(news_portal.uuid, req.params.uuid))
+			.returning({ deletedName: news_portal.title });
+
 		const data = await news_portalPromise;
 		const toast = {
 			status: 200,
@@ -199,6 +254,13 @@ export async function selectAll(req, res, next) {
 
 		const data = await baseQuery;
 
+		const newsItemsWithImageUrl = data.map((item) => ({
+			...item,
+			cover_image: item.cover_image
+				? `${SERVER_URL}/${item.cover_image}`
+				: null,
+		}));
+
 		const toast = {
 			status: 200,
 			type: 'select all',
@@ -206,7 +268,7 @@ export async function selectAll(req, res, next) {
 		};
 		return await res.status(200).json({
 			toast,
-			data,
+			data: newsItemsWithImageUrl,
 			pagination,
 		});
 	} catch (error) {
@@ -242,12 +304,21 @@ export async function select(req, res, next) {
 	try {
 		const data = await news_portalPromise;
 
+		const newsItemsWithImageUrl = data.map((item) => ({
+			...item,
+			cover_image: item.cover_image
+				? `${SERVER_URL}/${item.cover_image}`
+				: null,
+		}));
+
 		const toast = {
 			status: 200,
 			type: 'select',
 			message: 'News portal',
 		};
-		return await res.status(200).json({ toast, data: data[0] });
+		return await res
+			.status(200)
+			.json({ toast, data: newsItemsWithImageUrl[0] });
 	} catch (error) {
 		await handleError({ error, res });
 	}
@@ -280,12 +351,21 @@ export async function latestPost(req, res, next) {
 	try {
 		const data = await news_portalPromise;
 
+		const newsItemsWithImageUrl = data.map((item) => ({
+			...item,
+			cover_image: item.cover_image
+				? `${SERVER_URL}/${item.cover_image}`
+				: null,
+		}));
+
 		const toast = {
 			status: 200,
 			type: 'select',
 			message: 'Latest post',
 		};
-		return await res.status(200).json({ toast, data });
+		return await res
+			.status(200)
+			.json({ toast, data: newsItemsWithImageUrl });
 	} catch (error) {
 		await handleError({ error, res });
 	}
