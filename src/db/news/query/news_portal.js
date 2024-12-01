@@ -21,11 +21,7 @@ export async function insert(req, res, next) {
 
 	let cover_image_url = null;
 	if (cover_image && cover_image.length > 0) {
-		cover_image_url = path.join(
-			'uploads',
-			'cover_image',
-			cover_image[0].filename
-		);
+		cover_image_url = path.join('cover_image', cover_image[0].filename);
 	}
 
 	const {
@@ -102,7 +98,7 @@ export async function update(req, res, next) {
 				'../../../../',
 				previousCoverImage[0].cover_image
 			);
-			console.log(previousImagePath);
+			// console.log(previousImagePath);
 			if (fs.existsSync(previousImagePath)) {
 				fs.unlinkSync(previousImagePath);
 				console.log('File deleted successfully');
@@ -170,7 +166,7 @@ export async function remove(req, res, next) {
 			.from(news_portal)
 			.where(eq(news_portal.uuid, req.params.uuid));
 
-		console.log(coverImage);
+		// console.log(coverImage);
 
 		if (coverImage.length > 0 && coverImage[0].cover_image) {
 			const deleteImagePath = path.join(
@@ -178,7 +174,7 @@ export async function remove(req, res, next) {
 				'../../../../',
 				coverImage[0].cover_image
 			);
-			console.log(deleteImagePath);
+			// console.log(deleteImagePath);
 
 			if (fs.existsSync(deleteImagePath)) {
 				fs.unlinkSync(deleteImagePath);
@@ -254,8 +250,6 @@ export async function selectAll(req, res, next) {
 		};
 
 		const data = await baseQuery;
-
-		console.log(data, 'data');
 
 		const newsItemsWithImageUrl = data.map((item) => ({
 			...item,
