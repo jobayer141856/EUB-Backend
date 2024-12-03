@@ -133,7 +133,7 @@ export const pathNewsPortal = {
 	},
 };
 
-export const pathNewsPortalEntry = {
+export const pathDocumentsEntry = {
 	'/news/documents-entry': {
 		get: {
 			tags: ['news.documents_entry'],
@@ -147,7 +147,17 @@ export const pathNewsPortalEntry = {
 			tags: ['news.documents_entry'],
 			summary: 'Create a news entry',
 			description: 'Create a news entry',
-			requestBody: SE.requestBody_schema_ref('news/documents_entry'),
+			consumes: 'multipart/form-data',
+			contentType: 'multipart/form-data; boundary=abcde12345',
+			contentLength: '204',
+			requestBody: SE.requestBody_image({
+				uuid: SE.uuid(),
+				news_portal_uuid: SE.uuid(),
+				documents: SE.image(),
+				created_at: SE.date_time(),
+				updated_at: SE.date_time(),
+				remarks: SE.string('remarks'),
+			}),
 			responses: {
 				201: SE.response_schema_ref(201, 'news/documents_entry'),
 			},
@@ -167,10 +177,29 @@ export const pathNewsPortalEntry = {
 			tags: ['news.documents_entry'],
 			summary: 'Update a news entry',
 			description: 'Update a news entry',
+			consumes: 'multipart/form-data',
+			contentType: 'multipart/form-data; boundary=abcde12345',
+			contentLength: '204',
 			parameters: [SE.parameter_params('Get news uuid', 'uuid')],
-			requestBody: SE.requestBody_schema_ref('news/documents_entry'),
+			requestBody: SE.requestBody_image({
+				uuid: SE.uuid(),
+				news_portal_uuid: SE.uuid(),
+				documents: SE.image(),
+				created_at: SE.date_time(),
+				updated_at: SE.date_time(),
+				remarks: SE.string('remarks'),
+			}),
 			responses: {
 				200: SE.response_schema_ref(200, 'news/documents_entry'),
+			},
+		},
+		delete: {
+			tags: ['news.documents_entry'],
+			summary: 'Delete a news entry',
+			description: 'Delete a news entry',
+			parameters: [SE.parameter_params('Get news uuid', 'uuid')],
+			responses: {
+				204: SE.response_schema_ref(204, 'news/documents_entry'),
 			},
 		},
 	},
@@ -194,5 +223,5 @@ export const pathNewsPortalEntry = {
 
 export const pathNews = {
 	...pathNewsPortal,
-	...pathNewsPortalEntry,
+	...pathDocumentsEntry,
 };

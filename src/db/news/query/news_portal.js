@@ -75,11 +75,7 @@ export async function update(req, res, next) {
 
 	let cover_imageString = null;
 	if (cover_image && cover_image.length > 0) {
-		cover_imageString = path.join(
-			'uploads',
-			'cover_image',
-			cover_image[0].filename
-		);
+		cover_imageString = path.join('cover_image', cover_image[0].filename);
 	}
 
 	// delete the previous image from node local storage using fs
@@ -96,6 +92,7 @@ export async function update(req, res, next) {
 			const previousImagePath = path.join(
 				__dirname,
 				'../../../../',
+				'uploads',
 				previousCoverImage[0].cover_image
 			);
 			// console.log(previousImagePath);
@@ -103,7 +100,7 @@ export async function update(req, res, next) {
 				fs.unlinkSync(previousImagePath);
 				console.log('File deleted successfully');
 			} else {
-				console.log('File does not exist:', previousImagePath);
+				console.error('File does not exist:', previousImagePath);
 			}
 		}
 	}
@@ -172,6 +169,7 @@ export async function remove(req, res, next) {
 			const deleteImagePath = path.join(
 				__dirname,
 				'../../../../',
+				'uploads',
 				coverImage[0].cover_image
 			);
 			// console.log(deleteImagePath);
@@ -180,7 +178,7 @@ export async function remove(req, res, next) {
 				fs.unlinkSync(deleteImagePath);
 				console.log('File deleted successfully');
 			} else {
-				console.log('File does not exist:', deleteImagePath);
+				console.error('File does not exist:', deleteImagePath);
 			}
 		}
 
@@ -254,7 +252,7 @@ export async function selectAll(req, res, next) {
 		const newsItemsWithImageUrl = data.map((item) => ({
 			...item,
 			cover_image: item.cover_image
-				? `${generateSignedUrl(`${item.cover_image}`, 3600)}`
+				? generateSignedUrl(item.cover_image, 3600)
 				: null,
 		}));
 

@@ -13,7 +13,12 @@ const newsRouter = Router();
 
 const storage = multer.diskStorage({
 	destination: (req, file, cb) => {
-		const uploadPath = path.join('uploads', 'cover_image');
+		let uploadPath;
+		if (file.fieldname === 'cover_image') {
+			uploadPath = path.join('uploads', 'cover_image');
+		} else if (file.fieldname === 'documents') {
+			uploadPath = path.join('uploads', 'documents');
+		}
 		fs.mkdirSync(uploadPath, { recursive: true });
 		cb(null, uploadPath);
 	},
@@ -52,8 +57,16 @@ newsRouter.get(
 // NOTE: news_portal_entry routes
 newsRouter.get('/documents-entry', documentsEntryOperations.selectAll);
 newsRouter.get('/documents-entry/:uuid', documentsEntryOperations.select);
-newsRouter.post('/documents-entry', documentsEntryOperations.insert);
-newsRouter.put('/documents-entry/:uuid', documentsEntryOperations.update);
+newsRouter.post(
+	'/documents-entry',
+	upload.fields([{ name: 'documents', maxCount: 1 }]),
+	documentsEntryOperations.insert
+);
+newsRouter.put(
+	'/documents-entry/:uuid',
+	upload.fields([{ name: 'documents', maxCount: 1 }]),
+	documentsEntryOperations.update
+);
 newsRouter.delete('/documents-entry/:uuid', documentsEntryOperations.remove);
 newsRouter.get(
 	'/documents-entry/by/:news_portal_uuid',
