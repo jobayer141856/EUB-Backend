@@ -15,9 +15,9 @@ const storage = multer.diskStorage({
 	destination: (req, file, cb) => {
 		let uploadPath;
 		if (file.fieldname === 'cover_image') {
-			uploadPath = path.join('uploads', 'cover_image');
+			uploadPath = path.join('uploads/public/news', 'cover_image');
 		} else if (file.fieldname === 'documents') {
-			uploadPath = path.join('uploads', 'documents');
+			uploadPath = path.join('uploads/public/news', 'documents');
 		}
 		fs.mkdirSync(uploadPath, { recursive: true });
 		cb(null, uploadPath);

@@ -92,7 +92,7 @@ export async function update(req, res, next) {
 			const previousImagePath = path.join(
 				__dirname,
 				'../../../../',
-				'uploads',
+				'uploads/public/news',
 				previousCoverImage[0].cover_image
 			);
 			// console.log(previousImagePath);
@@ -169,7 +169,7 @@ export async function remove(req, res, next) {
 			const deleteImagePath = path.join(
 				__dirname,
 				'../../../../',
-				'uploads',
+				'uploads/public/news',
 				coverImage[0].cover_image
 			);
 			// console.log(deleteImagePath);
@@ -252,7 +252,11 @@ export async function selectAll(req, res, next) {
 		const newsItemsWithImageUrl = data.map((item) => ({
 			...item,
 			cover_image: item.cover_image
-				? generateSignedUrl(item.cover_image, 3600)
+				? generateSignedUrl({
+						type: 'public',
+						folder: 'news',
+						file: item.cover_image,
+					})
 				: null,
 		}));
 
@@ -302,7 +306,11 @@ export async function select(req, res, next) {
 		const newsItemsWithImageUrl = data.map((item) => ({
 			...item,
 			cover_image: item.cover_image
-				? `${SERVER_URL}/${item.cover_image}`
+				? generateSignedUrl({
+						type: 'public',
+						folder: 'news',
+						file: item.cover_image,
+					})
 				: null,
 		}));
 
@@ -349,7 +357,11 @@ export async function latestPost(req, res, next) {
 		const newsItemsWithImageUrl = data.map((item) => ({
 			...item,
 			cover_image: item.cover_image
-				? `${SERVER_URL}/${item.cover_image}`
+				? generateSignedUrl({
+						type: 'public',
+						folder: 'news',
+						file: item.cover_image,
+					})
 				: null,
 		}));
 

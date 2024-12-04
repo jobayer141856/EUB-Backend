@@ -2,15 +2,11 @@ import { desc, eq } from 'drizzle-orm';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { createApi } from '../../../util/api.js';
 import { handleError, validateRequest } from '../../../util/index.js';
 import { generateSignedUrl } from '../../../util/signed_url.js';
-import * as hrSchema from '../../hr/schema.js';
 import db from '../../index.js';
-import { constructSelectAllQuery } from '../../variables.js';
 import { documents_entry } from '../schema.js';
 
-const SERVER_URL = process.env.SERVER_URL;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -24,12 +20,14 @@ export async function insert(req, res, next) {
 		documents_url = path.join('documents', documents[0].filename);
 	}
 
-	const { uuid, created_at, updated_at, remarks } = req.body;
+	const { uuid, news_portal_uuid, created_at, updated_at, remarks } =
+		req.body;
 
 	const documents_entryPromise = db
 		.insert(documents_entry)
 		.values({
 			uuid,
+			news_portal_uuid,
 			documents: documents_url,
 			created_at,
 			updated_at,
@@ -71,7 +69,7 @@ export async function update(req, res, next) {
 			const oldDocumentPath = path.join(
 				__dirname,
 				'../../../../',
-				'uploads',
+				'uploads/public/news',
 				oldDocument[0].documents
 			);
 
@@ -86,12 +84,14 @@ export async function update(req, res, next) {
 
 	const documents_url = documentString ? documentString : req.body.documents;
 
-	const { uuid, created_at, updated_at, remarks } = req.body;
+	const { uuid, news_portal_uuid, created_at, updated_at, remarks } =
+		req.body;
 
 	const documents_entryPromise = db
 		.update(documents_entry)
 		.set({
 			uuid,
+			news_portal_uuid,
 			documents: documents_url,
 			created_at,
 			updated_at,
@@ -126,7 +126,7 @@ export async function remove(req, res, next) {
 		const deleteDocumentPath = path.join(
 			__dirname,
 			'../../../../',
-			'uploads',
+			'uploads/public/news',
 			documents[0].documents
 		);
 
@@ -176,7 +176,11 @@ export async function selectAll(req, res, next) {
 		const documentWithSignedUrl = resultPromiseForCount.map((item) => ({
 			...item,
 			documents: item.documents
-				? generateSignedUrl(item.documents, 3600)
+				? generateSignedUrl({
+						type: 'public',
+						folder: 'news',
+						file: item.documents,
+					})
 				: null,
 		}));
 
@@ -200,6 +204,7 @@ export async function select(req, res, next) {
 	const documents_entryPromise = db
 		.select({
 			uuid: documents_entry.uuid,
+			news_portal_uuid: documents_entry.news_portal_uuid,
 			documents: documents_entry.documents,
 			created_at: documents_entry.created_at,
 			updated_at: documents_entry.updated_at,
@@ -214,7 +219,11 @@ export async function select(req, res, next) {
 		const documentWithSignedUrl = data.map((item) => ({
 			...item,
 			documents: item.documents
-				? generateSignedUrl(item.documents, 3600)
+				? generateSignedUrl({
+						type: 'public',
+						folder: 'news',
+						file: item.documents,
+					})
 				: null,
 		}));
 
@@ -239,7 +248,8 @@ export async function selectByNewsPortalUuid(req, res, next) {
 	const documents_entryPromise = db
 		.select({
 			uuid: documents_entry.uuid,
-			document: documents_entry.documents,
+			news_portal_uuid: documents_entry.news_portal_uuid,
+			documents: documents_entry.documents,
 			created_at: documents_entry.created_at,
 			updated_at: documents_entry.updated_at,
 			remarks: documents_entry.remarks,

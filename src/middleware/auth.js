@@ -40,30 +40,32 @@ export const CreateToken = (user, time = '24h') => {
 };
 
 export const VerifyToken = (req, res, next) => {
-	const { authorization } = req?.headers;
+	// * no need to verify token for login, api-docs, and public files
 	const { originalUrl, method } = req;
-
 	if (
 		(originalUrl === '/hr/user/login' && method === 'POST') ||
-		originalUrl.startsWith('/api-docs')
+		originalUrl.startsWith('/api-docs') ||
+		originalUrl.startsWith('/public')
 	) {
 		return next();
 	}
 
-	return next();
+	// * get token from headers or query
+	const { authorization } = req?.headers;
+	const { token: uploadToken } = req?.query;
+	const token = uploadToken || authorization?.split(' ')[1];
 
-	// if (typeof authorization === 'undefined') {
-	// 	return res.status(401).json({ error: 'Unauthorized' });
-	// }
+	if (typeof token === 'undefined') {
+		return res.status(401).json({ error: 'Unauthorized' });
+	}
 
-	// const token = authorization?.split(' ')[1];
-	// verify(token, PRIVATE_KEY, (err, user) => {
-	// 	if (err) {
-	// 		return res.status(403).json({ error: 'Forbidden' });
-	// 	}
+	verify(token, PRIVATE_KEY, (err, user) => {
+		if (err) {
+			return res.status(403).json({ error: 'Forbidden' });
+		}
 
-	// 	req.user = user;
+		req.user = user;
 
-	// 	next();
-	// });
+		next();
+	});
 };
