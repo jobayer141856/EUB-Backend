@@ -45,7 +45,8 @@ export const VerifyToken = (req, res, next) => {
 	if (
 		(originalUrl === '/hr/user/login' && method === 'POST') ||
 		originalUrl.startsWith('/api-docs') ||
-		originalUrl.startsWith('/public')
+		originalUrl.startsWith('/public') ||
+		originalUrl.startsWith('/news')
 	) {
 		return next();
 	}
